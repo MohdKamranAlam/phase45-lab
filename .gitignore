@@ -51,6 +51,9 @@ temp_*.edf
 temp_*.h5
 temp_*.nc
 
+# Test data (can be regenerated)
+backend/test_data/
+
 # Logs
 logs/
 *.log
