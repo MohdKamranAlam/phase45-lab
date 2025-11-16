@@ -1,0 +1,15 @@
+fastapi[all]==0.115.2
+uvicorn[standard]==0.32.0
+numpy==1.26.4
+scipy==1.11.4
+soundfile==0.12.1
+pydantic-settings==2.4.0
+pyedflib>=0.1.30
+mne>=1.5.0
+h5py>=3.10.0
+xarray>=2023.6.0
+h5netcdf>=1.2.0
+wfdb>=4.1.2
+prometheus_client>=0.20.0
+matplotlib>=3.8.4
+scikit-learn>=1.4.0
