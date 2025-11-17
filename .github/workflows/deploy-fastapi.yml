@@ -52,4 +52,5 @@ jobs:
           environment_name: ${{ env.EB_ENVIRONMENT }}
           version_label: fastapi-${{ github.sha }}
           region: ${{ env.AWS_REGION }}
+          use_existing_version_if_available: true
           deployment_package: fastapi-eb.zip
