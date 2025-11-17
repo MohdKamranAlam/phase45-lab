@@ -15,6 +15,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.get("/", tags=["health"], include_in_schema=False)
+def root():
+    """
+    Simple root endpoint so load balancer health checks hitting "/" succeed.
+    """
+    return {"ok": True}
+
+
 # All routes live under /api/v1
 app.include_router(health.router, prefix=settings.API_PREFIX, tags=["health"])
 app.include_router(predict.router, prefix=settings.API_PREFIX, tags=["predict"])
