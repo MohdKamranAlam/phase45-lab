@@ -1,0 +1,50 @@
+name: Deploy FastAPI to Elastic Beanstalk
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - "fastapi/**"
+      - ".github/workflows/deploy-fastapi.yml"
+
+env:
+  AWS_REGION: ap-south-1
+  EB_APPLICATION: phase45-fastapi
+  EB_ENVIRONMENT: phase45-fastapi-env
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate requirements
+        working-directory: fastapi
+        run: pip install --upgrade pip && pip install -r requirements.txt
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Package FastAPI bundle
+        working-directory: fastapi
+        run: |
+          zip -r ../fastapi-eb.zip . \
+            -x ".venv/*" "__pycache__/*" ".git/*" ".github/*" "*.pyc"
+
+      - name: Deploy to Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v22
+        with:
+          application_name: ${{ env.EB_APPLICATION }}
+          environment_name: ${{ env.EB_ENVIRONMENT }}
+          version_label: fastapi-${{ github.sha }}
+          region: ${{ env.AWS_REGION }}
+          deployment_package: fastapi-eb.zip
