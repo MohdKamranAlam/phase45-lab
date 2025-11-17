@@ -1,6 +1,7 @@
 import cors from "cors";
 import { env } from "../config/index.js";
 
+//this is cors middleware configuration
 export default cors({
   origin: (origin, cb) => {
     if (!origin) return cb(null, true); // allow curl/postman

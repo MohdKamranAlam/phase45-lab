@@ -69,6 +69,7 @@ async def _collect_samples(domain: DomainEnum, files: List[UploadFile]):
             tmp.flush()
             tmp.close()
 
+            # this why
             actual_domain = _resolve_domain(domain, name)
             sample = run_phase45(actual_domain.value, tmp.name)
             sample["name"] = name
