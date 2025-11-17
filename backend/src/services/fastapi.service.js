@@ -24,7 +24,7 @@ const toFormPart = (file) => {
   return null;
 };
 
-// helpers
+// helperssdjkasnjdnasjkdnask
 export async function predictJSON(domain, files) {
   const fd = new FormData();
   fd.append("domain", domain);
