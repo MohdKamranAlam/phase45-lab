@@ -9,6 +9,7 @@ app.use(morgan("dev"));
 app.use(express.json({ limit: "2mb" }));
 app.use(corsMw);
 
+// api routes
 app.use("/api", routes);
 
 // health root
