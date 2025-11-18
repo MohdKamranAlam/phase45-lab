@@ -10,7 +10,7 @@ on:
 env:
   AWS_REGION: ap-south-1
   EB_APPLICATION: phase45-fastapi
-  EB_ENVIRONMENT: Phase45-fastAPI-env
+  EB_ENVIRONMENT: Phase45-fastapi-py311
 
 jobs:
   deploy:
