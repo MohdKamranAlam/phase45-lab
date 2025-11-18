@@ -25,6 +25,7 @@ class Settings(BaseSettings):
         env_file=".env",
         env_prefix="",
         case_sensitive=False,
+        extra="allow",  # ignore unrelated env vars so shared .env files don't crash startup
     )
 
     @property
