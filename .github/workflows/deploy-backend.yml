@@ -10,7 +10,7 @@ on:
 env:
   AWS_REGION: ap-south-1
   EB_APPLICATION: phase45-backend
-  EB_ENVIRONMENT: phase45-backend-env
+  EB_ENVIRONMENT: Phase45-backend-env
 
 jobs:
   deploy:

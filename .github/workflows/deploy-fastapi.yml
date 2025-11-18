@@ -8,9 +8,9 @@ on:
       - ".github/workflows/deploy-fastapi.yml"
 
 env:
-  AWS_REGION: us-east-1
+  AWS_REGION: ap-south-1
   EB_APPLICATION: phase45-fastapi
-  EB_ENVIRONMENT: phase45-fastapi-env
+  EB_ENVIRONMENT: Phase45-fastAPI-env
 
 jobs:
   deploy:
