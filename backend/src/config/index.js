@@ -31,5 +31,5 @@ export const env = {
   PORT: Number(process.env.PORT || 8080),
   FASTAPI_URL: fastapiUrl,
   ALLOWED_ORIGINS: (process.env.ALLOWED_ORIGINS || "").split(",").filter(Boolean),
-  MAX_FILE_MB: Number(process.env.MAX_FILE_MB || 100),
+  MAX_FILE_MB: Number(process.env.MAX_FILE_MB || 1024),
 };
