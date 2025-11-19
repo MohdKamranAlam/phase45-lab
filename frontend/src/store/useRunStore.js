@@ -30,8 +30,8 @@ const extractErrorMessage = (error, fallback) => {
   if (message === "Network Error") {
     // Typical axios browser message when the API cannot be reached
     message =
-      "Network error talking to the API gateway (http://127.0.0.1:8080). " +
-      "Make sure the Node backend is running and not blocked by CORS or a proxy.";
+      "Network error talking to the API gateway. " +
+      "Make sure the backend is reachable and not blocked by CORS or a proxy.";
   }
 
   return message || fallback;
