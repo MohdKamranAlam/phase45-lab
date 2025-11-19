@@ -38,7 +38,11 @@ const s3UploadsEnabled = true; // Always enable S3 uploads for reliability with 
 export async function predict(domain, files, onUploadProgress) {
   const fd = new FormData();
   for (const f of files) fd.append("files", f);           // field name: "files"
-  const BIG = 10 * 1024 * 1024; // Lower threshold to 10MB to prefer S3 for medium files too
+  
+  // FORCE S3 for EVERYTHING to bypass Nginx 1MB limit
+  // The server seems to have a strict 1MB limit that isn't updating.
+  // S3 upload bypasses this limit completely.
+  const BIG = 0; 
   const useS3 = s3UploadsEnabled && Array.from(files || []).some((f) => (f?.size || 0) > BIG);
 
   if (!useS3) {
