@@ -1,4 +1,5 @@
-from fastapi import APIRouter, UploadFile, File, Form
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from pydantic import BaseModel
 from fastapi.responses import StreamingResponse
 from typing import List, Dict, Any
 import os
@@ -22,6 +23,10 @@ import soundfile as sf
 from ..models.schemas import DomainEnum, FileResult, PredictResponse
 from ..core.config import settings
 from ..services.phase45 import run_phase45
+try:
+    from ..services.s3_utils import download_to_tmp
+except Exception:
+    download_to_tmp = None  # type: ignore
 
 logger = logging.getLogger(__name__)
 np.random.seed(42)
@@ -695,6 +700,71 @@ async def predict_csv(
         media_type="text/csv",
         headers={"Content-Disposition": 'attachment; filename="phase45_results.csv"'},
     )
+
+
+class PredictFromS3Input(BaseModel):
+    domain: DomainEnum
+    keys: list[str]
+
+
+@router.post("/predict_from_s3", response_model=PredictResponse)
+def predict_from_s3(payload: PredictFromS3Input):
+    if download_to_tmp is None:
+        raise HTTPException(status_code=501, detail="S3 uploads not configured")
+    if not settings.S3_BUCKET:
+        raise HTTPException(status_code=501, detail="S3 bucket not configured")
+    if not payload.keys:
+        raise HTTPException(status_code=400, detail="keys required")
+
+    samples = []
+    temp_paths = []
+    try:
+        for key in payload.keys:
+            path, name = download_to_tmp(key)
+            temp_paths.append(path)
+            domain = _resolve_domain(payload.domain, name)
+            try:
+                sample = run_phase45(domain.value, path)
+                sample["name"] = name
+                sample["domain"] = domain.value
+                sample["ok"] = True
+                if isinstance(sample.get("features"), dict):
+                    sample["features"]["name"] = name
+            except Exception as exc:
+                logger.exception("phase45 processing failed for %s", name)
+                sample = {
+                    "ok": False,
+                    "name": name + " (error)",
+                    "domain": domain.value,
+                    "fs": 0.0,
+                    "features": {},
+                    "vector": None,
+                    "window": None,
+                    "env": None,
+                    "error_message": str(exc),
+                }
+            samples.append(sample)
+
+        analysis = _analyze_samples(samples, include_assets=True, requested_domain=payload.domain)
+        zip_b64 = None
+        if analysis["zip_bytes"] is not None:
+            zip_b64 = base64.b64encode(analysis["zip_bytes"]).decode("utf-8")
+        metrics = analysis["metrics"]
+        return PredictResponse(
+            results=analysis["results"],
+            r2=metrics["r2"],
+            mae=metrics["mae"],
+            delta_mean=metrics["delta_mean"],
+            per_domain=analysis["per_domain"],
+            zip_base64=zip_b64,
+            zip_filename=analysis["zip_filename"] if zip_b64 else None,
+        )
+    finally:
+        for path in temp_paths:
+            try:
+                os.remove(path)
+            except Exception:
+                pass
 
 
 @router.post("/predict/spectrogram")

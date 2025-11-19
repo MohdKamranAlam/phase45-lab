@@ -72,3 +72,14 @@ export async function healthFastAPI() {
   const { data } = await api.get("/health");
   return data;
 }
+
+// --- S3 helpers ---
+export async function presignUpload(name, contentType) {
+  const { data } = await api.post("/uploads/presign", { name, content_type: contentType });
+  return data;
+}
+
+export async function predictFromS3(domain, keys) {
+  const { data } = await api.post("/predict_from_s3", { domain, keys });
+  return data;
+}

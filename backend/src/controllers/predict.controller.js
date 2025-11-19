@@ -5,6 +5,8 @@ import {
   predictCSV,
   spectrogramPNG,
   spectrogramJSON,
+  presignUpload,
+  predictFromS3,
 } from "../services/fastapi.service.js";
 
 const cleanupFiles = (files) => {
@@ -59,4 +61,20 @@ export const spectroJson = asyncHandler(async (req, res) => {
   } finally {
     cleanupFiles([req.file]);
   }
+});
+
+export const presign = asyncHandler(async (req, res) => {
+  const { name, contentType } = req.body || {};
+  if (!name) return res.status(400).json({ error: "name is required" });
+  const data = await presignUpload(name, contentType);
+  res.json(data);
+});
+
+export const predictFromS3Ctl = asyncHandler(async (req, res) => {
+  const { domain } = req.params;
+  const { keys } = req.body || {};
+  if (!domain) return res.status(400).json({ error: "domain is required" });
+  if (!Array.isArray(keys) || !keys.length) return res.status(400).json({ error: "keys required" });
+  const data = await predictFromS3(String(domain).toLowerCase(), keys);
+  res.json(data);
 });

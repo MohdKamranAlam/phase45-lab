@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { predict, predictCsv } from "../controllers/predict.controller.js";
+import { predict, predictCsv, predictFromS3Ctl } from "../controllers/predict.controller.js";
 import { uploadMany } from "../middlewares/multer.js";
 
 const r = Router();
@@ -21,6 +21,9 @@ r.post("/:domain/csv", uploadMany, (req, res, next) => {
   injectDomain(req);
   return predictCsv(req, res, next);
 });
+
+// POST /api/predict/:domain/from-s3 -> process S3 keys
+r.post("/:domain/from-s3", (req, res, next) => predictFromS3Ctl(req, res, next));
 
 // Legacy alias supporting body/query domain
 r.post("/", uploadMany, (req, res, next) => {

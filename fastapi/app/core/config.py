@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     MODEL_PARAMS_FILE: str = str(_DEFAULT_PARAMS)
     MAX_LIGO_SAMPLES: int = 2_000_000
     MAX_GRACE_TIMESTEPS: int = 10000
+    AWS_REGION: str | None = None
+    S3_BUCKET: str | None = None
+    S3_PREFIX: str = "phase45/uploads/"
 
     model_config = SettingsConfigDict(
         env_file=".env",
