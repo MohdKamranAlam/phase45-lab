@@ -31,13 +31,14 @@ try {
   uploadHostname = "";
 }
 const looksLikeCloudFront = /cloudfront\.net$/i.test(uploadHostname);
-const s3UploadsEnabled = s3Flag === "1" || (s3Flag === "auto" && looksLikeCloudFront);
+// Force S3 uploads if we are on CloudFront (production) or if explicitly enabled
+const s3UploadsEnabled = true; // Always enable S3 uploads for reliability with large files
 
 // ---- Predict (multiple files) ----
 export async function predict(domain, files, onUploadProgress) {
   const fd = new FormData();
   for (const f of files) fd.append("files", f);           // field name: "files"
-  const BIG = 28 * 1024 * 1024;
+  const BIG = 10 * 1024 * 1024; // Lower threshold to 10MB to prefer S3 for medium files too
   const useS3 = s3UploadsEnabled && Array.from(files || []).some((f) => (f?.size || 0) > BIG);
 
   if (!useS3) {
