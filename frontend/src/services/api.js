@@ -1,12 +1,24 @@
 import axios from "axios";
 
-const resolvedBaseUrl =
+let resolvedBaseUrl =
   import.meta.env.VITE_API_BASE ??
   import.meta.env.VITE_API_BASE_URL ??
   "http://127.0.0.1:8080";
-const resolvedUploadBaseUrl =
+
+// HOTFIX: Force CloudFront URL if we see the insecure Elastic Beanstalk URL
+// This overrides Amplify environment variables that might still be pointing to HTTP
+if (resolvedBaseUrl.includes("elasticbeanstalk.com") && resolvedBaseUrl.startsWith("http:")) {
+  resolvedBaseUrl = "https://d2czd7bg7uzarm.cloudfront.net";
+}
+
+let resolvedUploadBaseUrl =
   import.meta.env.VITE_UPLOAD_BASE ??
   resolvedBaseUrl;
+
+if (resolvedUploadBaseUrl.includes("elasticbeanstalk.com") && resolvedUploadBaseUrl.startsWith("http:")) {
+  resolvedUploadBaseUrl = "https://d2czd7bg7uzarm.cloudfront.net";
+}
+
 const api = axios.create({
   baseURL: resolvedBaseUrl,
   timeout: 120000,
