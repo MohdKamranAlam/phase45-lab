@@ -36,8 +36,23 @@ app.get("/", (_req, res) => res.json({ ok: true, service: "phase45-gateway" }));
 
 // error handler (so CORS headers still go out)
 app.use((err, _req, res, _next) => {
-  console.error(err);
-  res.status(500).json({ ok:false, error: err.message || "internal" });
+  console.error("Global Error Handler:", err);
+  const status = err.status || 500;
+  const message = err.message || "internal server error";
+  
+  // Handle Axios errors from FastAPI service
+  if (err.isAxiosError) {
+    const upstreamStatus = err.response?.status || 502;
+    const upstreamData = err.response?.data || "Upstream error";
+    console.error("Upstream FastAPI Error:", upstreamData);
+    return res.status(upstreamStatus).json({ 
+      ok: false, 
+      error: "FastAPI service error", 
+      details: upstreamData 
+    });
+  }
+
+  res.status(status).json({ ok:false, error: message });
 });
 
 const PORT = process.env.PORT || 8080;
