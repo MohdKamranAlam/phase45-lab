@@ -31,7 +31,7 @@ def presign_put(name: str, content_type: str | None = None) -> dict:
     if not bucket:
         raise RuntimeError("S3_BUCKET not configured")
     key = f"{settings.S3_PREFIX}{int(__import__('time').time())}_{_sanitize(name)}"
-    params = {"Bucket": bucket, "Key": key, "ACL": "private"}
+    params = {"Bucket": bucket, "Key": key}
     if content_type:
         params["ContentType"] = content_type
     url = _client().generate_presigned_url(
