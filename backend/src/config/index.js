@@ -8,6 +8,11 @@ const prefixPath = (value = "") => {
   return `/${trimmed.replace(/^\/+/, "")}`;
 };
 
+const parsePositiveNumber = (value, fallback) => {
+  const num = Number(value);
+  return Number.isFinite(num) && num > 0 ? num : fallback;
+};
+
 const rawUrl = process.env.FASTAPI_URL && process.env.FASTAPI_URL.trim();
 const rawBase =
   process.env.FASTAPI_BASE && process.env.FASTAPI_BASE.trim();
@@ -27,9 +32,13 @@ const fastapiUrl = baseFromUrl
     : baseFromUrl
   : normalize(rawBase || "http://127.0.0.1:8001") + normalizedPrefix;
 
+const DEFAULT_FASTAPI_TIMEOUT_MS = 5 * 60 * 1000;
+const fastapiTimeoutMs = parsePositiveNumber(process.env.FASTAPI_TIMEOUT_MS, DEFAULT_FASTAPI_TIMEOUT_MS);
+
 export const env = {
   PORT: Number(process.env.PORT || 8080),
   FASTAPI_URL: fastapiUrl,
+  FASTAPI_TIMEOUT_MS: fastapiTimeoutMs,
   ALLOWED_ORIGINS: (process.env.ALLOWED_ORIGINS || "").split(",").filter(Boolean),
   MAX_FILE_MB: Number(process.env.MAX_FILE_MB || 1024),
 };

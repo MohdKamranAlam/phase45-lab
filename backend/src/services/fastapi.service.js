@@ -5,7 +5,7 @@ import { env } from "../config/index.js";
 
 const api = axios.create({
   baseURL: env.FASTAPI_URL,
-  timeout: 120000,
+  timeout: env.FASTAPI_TIMEOUT_MS,
   maxBodyLength: Infinity,
   maxContentLength: Infinity,
 });

@@ -31,8 +31,9 @@ try {
   uploadHostname = "";
 }
 const looksLikeCloudFront = /cloudfront\.net$/i.test(uploadHostname);
-// Force S3 uploads if we are on CloudFront (production) or if explicitly enabled
-const s3UploadsEnabled = true; // Always enable S3 uploads for reliability with large files
+// Enable S3 uploads when explicitly requested or when running from CloudFront
+const s3UploadsEnabled =
+  s3Flag === "true" || (s3Flag === "auto" && looksLikeCloudFront);
 
 // ---- Predict (multiple files) ----
 export async function predict(domain, files, onUploadProgress) {

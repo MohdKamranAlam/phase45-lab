@@ -18,6 +18,8 @@ Create a `.env` (or `.env.production`) file based on `.env.example` and set one 
 
 - `VITE_API_BASE` – preferred key for the Node gateway base URL (e.g., Elastic Beanstalk domain).
 - `VITE_API_BASE_URL` – legacy key that is still supported for compatibility.
+- `VITE_S3_UPLOADS` – controls whether the React app funnels uploads through S3.
+	Accepts `true`, `false`, or `auto` (default). `true` forces the `/from-s3` path, `false` stays on the standard multipart upload, and `auto` enables S3 only when the deployment hostname looks like CloudFront (production).
 
 Only variables prefixed with `VITE_` are exposed to the React app at build time. Access them via `import.meta.env.VITE_API_BASE` in code.
 
